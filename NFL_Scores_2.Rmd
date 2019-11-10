@@ -1,0 +1,75 @@
+---
+title: "NFL Scores"
+author: "Bryan Adams"
+date: "October 23, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## NFL Scores from NFL.com
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(XML)
+library(xml2)
+library(purrr)
+library(rvest)
+
+# Only thing you need to change
+
+weeks = list(1,2,3,4,5,6,7)
+
+url = "http://www.nfl.com/schedules-uk/2019/REG"
+
+
+
+list_of_pages = function(x){
+
+  str_c(url,x)
+    
+}
+
+scores = function(week, url){
+  
+  stats = url%>%
+    read_html()%>%
+    html_nodes(".list-matchup-row-team span")%>%
+    html_text()%>%
+    matrix(ncol = 8, byrow = TRUE)%>%
+    as_tibble()%>%
+    select(V1,V4,V5,V8)%>%
+    rename(`Home Team` = V1, `Home Score` = V4, `Away Score` = V5, `Away Team` = V8)%>%
+    mutate(Week = week)
+  
+}
+
+weeks%>%
+  map(list_of_pages)%>%
+  map2(weeks,.,scores)%>%
+  bind_rows()%>%
+  group_by(Week)%>%
+  mutate(Game = 1:n())%>%
+  ungroup()%>%
+  mutate(winner = case_when(
+    `Home Score` > `Away Score` ~ `Home Team`,
+    `Home Score` < `Away Score` ~ `Away Team`,
+    TRUE ~ "Tie"
+  ))%>%
+  select(Week, winner, Game)%>%
+  spread(Game, winner, fill = NA)%>%
+  write_csv("NFL_Scores_2.csv")
+
+nfl_scores = read_csv("NFL_Scores_2.csv")
+
+week1 = nfl_scores[1,]
+
+nfl_scores%>%
+  unlist()%>%
+  list()
+
+```
+

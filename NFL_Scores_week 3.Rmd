@@ -1,0 +1,179 @@
+---
+title: "NFL Scores"
+author: "Bryan Adams"
+date: "October 23, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## NFL Scores from NFL.com
+
+```{r}
+library(tidyverse)
+library(stringr)
+library(XML)
+library(xml2)
+library(purrr)
+library(rvest)
+
+# Only thing you need to change
+
+weeks = list(1,2,3)
+
+url = "http://www.nfl.com/schedules-uk/2019/REG"
+
+list_of_pages = function(x){
+  str_c(url,x)
+}
+
+scores = function(week, url){
+  
+  stats = url%>%
+    read_html()%>%
+    html_nodes(".list-matchup-row-team span")%>%
+    html_text()%>%
+    matrix(ncol = 8, byrow = TRUE)%>%
+    as_tibble()%>%
+    select(V1,V4,V5,V8)%>%
+    rename(`Home Team` = V1, `Home Score` = V4, `Away Score` = V5, `Away Team` = V8)%>%
+    mutate(Week = week)
+  
+}
+
+weeks%>%
+  map(list_of_pages)%>%
+  map2(weeks,.,scores)%>%
+  bind_rows()%>%
+  write_csv("NFL_Scores_3.csv")
+
+Scores = read_csv("NFL_Scores_3.csv") %>% janitor::clean_names()
+
+Scores = Scores %>% 
+  mutate(home_team = case_when(
+    home_team == "Packers" ~ "Green Bay Packers",
+    home_team == "Redskins" ~ "Washington Redskins",
+    home_team == "Bills" ~ "Buffalo Bills",
+    home_team == "Falcons" ~ "Atlanta Falcons",
+    home_team == "Ravens" ~ "Baltimore Ravens",
+    home_team == "Chiefs" ~ "Kansas City Chiefs",
+    home_team == "Titans" ~ "Tenessee Titans",
+    home_team == "Colts" ~ "Indianapolis Colts",
+    home_team == "Bengals" ~ "Cincinnati Bengals",
+    home_team == "49ers" ~ "San Francisco 49ers",
+    home_team == "Giants" ~ "New York Giants",
+    home_team == "Lions" ~ "Detroit Lions",
+    home_team == "Steelers" ~ "Pittsburgh Steelers",
+    home_team == "Texans" ~ "Houston Texans",
+    home_team == "Broncos" ~ "Denver Broncos",
+    home_team == "Buccaneers" ~ "Tampa Bay Buccaneers",
+    home_team == "Cardinals" ~ "Arizona Cardinals",
+    home_team == "Bears" ~ "Chicago Bears",
+    home_team == "Panthers" ~ "Carolina Panthers",
+    home_team == "Eagles" ~ "Philadelphia Eagles",
+    home_team == "Jets" ~ "New York Jets",
+    home_team == "Vikings" ~ "Minnesota Vikings",
+    home_team == "Dolphins" ~ "Miami Dolphins",
+    home_team == "Jaguars" ~ "Jacksonville Jaguars",
+    home_team == "Browns" ~ "Cleveland Browns",
+    home_team == "Chargers" ~ "Los Angeles Chargers",
+    home_team == "Seahawks" ~ "Seattle Seahawks",
+    home_team == "Cowboys" ~ "Dallas Cowboys",
+    home_team == "Patriots" ~ "New England Patriots",
+    home_team == "Saints" ~ "New Orleans Saints",
+    home_team == "Raiders" ~ "Oakland Raiders",
+    home_team == "Rams" ~ "Los Angeles Rams")) %>%
+  mutate(away_team = case_when(
+    away_team == "Packers" ~ "Green Bay Packers",
+    away_team == "Redskins" ~ "Washington Redskins",
+    away_team == "Bills" ~ "Buffalo Bills",
+    away_team == "Falcons" ~ "Atlanta Falcons",
+    away_team == "Ravens" ~ "Baltimore Ravens",
+    away_team == "Chiefs" ~ "Kansas City Chiefs",
+    away_team == "Titans" ~ "Tenessee Titans",
+    away_team == "Colts" ~ "Indianapolis Colts",
+    away_team == "Bengals" ~ "Cincinnati Bengals",
+    away_team == "49ers" ~ "San Francisco 49ers",
+    away_team == "Giants" ~ "New York Giants",
+    away_team == "Lions" ~ "Detroit Lions",
+    away_team == "Steelers" ~ "Pittsburgh Steelers",
+    away_team == "Texans" ~ "Houston Texans",
+    away_team == "Broncos" ~ "Denver Broncos",
+    away_team == "Buccaneers" ~ "Tampa Bay Buccaneers",
+    away_team == "Cardinals" ~ "Arizona Cardinals",
+    away_team == "Bears" ~ "Chicago Bears",
+    away_team == "Panthers" ~ "Carolina Panthers",
+    away_team == "Eagles" ~ "Philadelphia Eagles",
+    away_team == "Jets" ~ "New York Jets",
+    away_team == "Vikings" ~ "Minnesota Vikings",
+    away_team == "Dolphins" ~ "Miami Dolphins",
+    away_team == "Jaguars" ~ "Jacksonville Jaguars",
+    away_team == "Browns" ~ "Cleveland Browns",
+    away_team == "Chargers" ~ "Los Angeles Chargers",
+    away_team == "Seahawks" ~ "Seattle Seahawks",
+    away_team == "Cowboys" ~ "Dallas Cowboys",
+    away_team == "Patriots" ~ "New England Patriots",
+    away_team == "Saints" ~ "New Orleans Saints",
+    away_team == "Raiders" ~ "Oakland Raiders",
+    away_team == "Rams" ~ "Los Angeles Rams")) %>%
+  mutate(winner = case_when(home_score > away_score ~ home_team,
+                             home_score == away_score ~ "TIE",
+                             home_score < away_score ~ away_team))  
+
+# weeks = 1:8
+# win = NULL
+# b = function(x, weeks){
+#   x %>% 
+#     group_by(week) %>%
+#     win[weeks] = winners[week==weeks]
+# }
+# rm(week)
+# rm(win)
+# win = NULL
+# weeks=1
+# win[weeks] = Scores %>% group_by(week) %>% 
+#   Scores$winner[Scores$week==1] %>% as_list()
+# 
+# win = NULL
+# w = list(1,2)
+# 
+# a = function(x,w){
+#   Scoresfilter(x$week == w) %>% 
+#   select(winner)  -> help
+# win[w] = help
+# }
+# 
+# map2(scores,w,a)
+# 
+# i = 1
+# win = NULL
+# Scores %>% 
+#   group_by(week) %>%
+#   map2(a)
+
+
+```
+
+```{r}
+#For loop
+
+winners = NULL
+for (i in 1:3){
+  winners[i] = Scores %>% 
+    filter(week == i) %>%
+    select(winner)
+}
+
+#winners[[6]] = winners[[6]][-8]
+win2 = NULL
+wins = function(weeks){
+  Scores %>% select(week, winner) %>% 
+    filter(week == weeks) %>%
+    select(winner)
+}
+
+win2 = map(weeks, wins)
+win2 = as.list(win2)
+```
