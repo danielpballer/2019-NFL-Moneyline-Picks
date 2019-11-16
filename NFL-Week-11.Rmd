@@ -24,7 +24,7 @@ week_7 = read_csv("NFL Week 7.csv")
 week_8 = read_csv("NFL Week 8.csv")
 week_9 = read_csv("NFL Week 9.csv")
 week_10 = read_csv("NFL Week 10.csv")
-data = read_csv("NFL Week 9.csv") # Update
+data = read_csv("NFL Week 11.csv") # Update
 cadet_wk1 = read_csv("NFL Week 1 MA206.csv")
 cadet_wk2 = read_csv("NFL Week 2 MA206.csv")
 cadet_wk3 = read_csv("NFL Week 3 MA206.csv")
@@ -35,7 +35,7 @@ cadet_wk7 = read_csv("NFL Week 7 MA206.csv")
 cadet_wk8 = read_csv("NFL Week 8 MA206.csv") 
 cadet_wk9 = read_csv("NFL Week 9 MA206.csv") 
 cadet_wk10 = read_csv("NFL Week 10 MA206.csv")
-cadet_wk11 = read_csv("NFL Week 9 MA206.csv") # Update
+c_data = read_csv("NFL Week 11 MA206.csv") # Update
 ```
 
 ```{r games, include=FALSE}
@@ -52,6 +52,7 @@ wk7_n = 14 # number of games in week 7
 wk8_n = 15 # number of games in week 8
 wk9_n = 14 # number of games in week 9
 wk10_n = 13 # number of games in week 10
+wk_max = c(wk1_n, wk2_n, wk3_n, wk4_n, wk5_n, wk6_n, wk7_n, wk8_n, wk9_n, wk10_n, n)
 g1_n = 16 # number of group picks in week 1
 g2_n = 16 # number of group picks in week 2
 g3_n = 16 # number of group picks in week 3
@@ -62,6 +63,7 @@ g7_n = 14 # number of group picks in week 7
 g8_n = 15 # number of group picks in week 8
 g9_n = 14 # number of group picks in week 9
 g10_n = 13 # number of group picks in week 10
+
 wk1_wins = 10 #number of wins in week 1
 wk2_wins = 10 #number of wins in week 2
 wk3_wins = 12 #number of wins in week 3
@@ -84,7 +86,7 @@ wk9_combined_wins = 7 # number of combined wins in week 9
 wk10_combined_wins = 3 # number of combined wins in week 10 # update this
 
 # who actually won
-winners = c("San Francisco 49ers","Houston Texans", "Philadelphia Eagles","Pittsburgh Steelers","Miami Dolphins","Kansas City Chiefs","Carolina Panthers","Buffalo Bills","Seattle Seahawks","Oakland Raiders","Los Angeles Chargers","Denver Broncos","Baltimore Ravens","Dallas Cowboys") 
+winners = c("Cleveland Browns","Carolina Panthers", "Dallas Cowboys","Jacksonville Jaguars","Buffalo Bills","Kansas City Chiefs","Carolina Panthers","Buffalo Bills","Seattle Seahawks","Oakland Raiders","Los Angeles Chargers","Denver Broncos","Baltimore Ravens","Dallas Cowboys") 
 
 CBSsports = c("San Francisco 49ers","Houston Texans", "Philadelphia Eagles","Indianapolis Colts","New York Jets","Minnesota Vikings","Carolina Panthers","Buffalo Bills","Seattle Seahawks","Oakland Raiders","Green Bay Packers","Cleveland Browns","Baltimore Ravens","Dallas Cowboys")
 
@@ -209,8 +211,8 @@ Total = dim(data)[1]
 ```{r plotting group results, echo=FALSE}
 #Previous Weeks
 wins = round(c((wk1_wins/g1_n),(wk2_wins/g2_n),(wk3_wins/g3_n), (wk4_wins/g4_n), (wk5_wins/g5_n),
-               (wk6_wins/g6_n),(wk7_wins/g7_n),(wk8_wins/g8_n), (wk9_wins/g9_n), (wk10_wins/g10_n),
-               weekly_win_percentage),4)
+               (wk6_wins/g6_n),(wk7_wins/g7_n),(wk8_wins/g8_n), (wk9_wins/g9_n),
+               (wk10_wins/g10_n), weekly_win_percentage),4)
 weeks = c("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9",
           "Week_10", "Week_11")
 df = as.data.frame(wins, weeks)
@@ -281,39 +283,80 @@ season = indiv_weekly_pred(week_1, wk1_winners) %>%
   mutate(Percent = round(Week_11/n,4)) %>%
   arrange(-Percent)
 
-#determining how many weeks each person picked, season correct percentage, and adjusted season percentage.
-indiv_disp = season %>%
-  mutate(w1p = ifelse(is.na(Week_1)==T,0,1)) %>%
-  mutate(w2p = ifelse(is.na(Week_2)==T,0,1)) %>%
-  mutate(w3p = ifelse(is.na(Week_3)==T,0,1)) %>%
-  mutate(w4p = ifelse(is.na(Week_4)==T,0,1)) %>%
-  mutate(w5p = ifelse(is.na(Week_5)==T,0,1)) %>%
-  mutate(w6p = ifelse(is.na(Week_6)==T,0,1)) %>%
-  mutate(w7p = ifelse(is.na(Week_7)==T,0,1)) %>%
-  mutate(w8p = ifelse(is.na(Week_8)==T,0,1)) %>%
-  mutate(w9p = ifelse(is.na(Week_9)==T,0,1)) %>%
-  mutate(w10p = ifelse(is.na(Week_10)==T,0,1)) %>%
-  mutate(w11p = ifelse(is.na(Week_11)==T,0,1)) %>%
-  mutate(Weeks_Picked = w1p+w2p+w3p+w4p+w5p+w6p+w7p+w8p+w9p+w10p+w11p) %>%
-  mutate(games_picked = ((w1p*wk1_n)+(w2p*wk2_n)+(w3p*wk3_n)+(w4p*wk4_n)+(w5p*wk5_n)+
-                           (w6p*wk6_n)+(w7p*wk7_n)+(w8p*wk8_n)+(w9p*wk9_n)+(w10p*wk10_n)+
-                           (w11p*n))) %>%
-  mutate(Season_Percent = round(((ifelse(is.na(Week_1)==T, 0, Week_1) + 
-                             ifelse(is.na(Week_2)==T,0,Week_2) +
-                             ifelse(is.na(Week_3)==T,0,Week_3)+
-                             ifelse(is.na(Week_4)==T,0,Week_4)+
-                             ifelse(is.na(Week_5)==T,0,Week_5)+
-                             ifelse(is.na(Week_6)==T,0,Week_6)+
-                             ifelse(is.na(Week_7)==T,0,Week_7)+
-                             ifelse(is.na(Week_8)==T,0,Week_8)+
-                             ifelse(is.na(Week_9)==T,0,Week_9)+
-                             ifelse(is.na(Week_10)==T,0,Week_10)+
-                             ifelse(is.na(Week_11)==T,0,Week_11))/games_picked),4)) %>%
-  select(name, Week_1, Week_2, Week_3, Week_4, Week_5, Week_6, Week_7, Week_8, Week_9, Week_10, 
-         Week_11, Percent, Weeks_Picked, Season_Percent) %>%
+#Creating a dataframe with only the weekly picks
+a = season %>% select(-name, -Percent)
+
+#Creating a vector of how many weeks each person picked over the season
+tot_week = NULL
+help = NULL
+for (i in 1:dim(a)[1]){
+  for(j in 1:length(a)){
+    help[j] = ifelse(is.na(a[i,j])==T,0,1)
+    tot_week[i] = sum(help)
+  }
+}
+
+#Creating a vector of how many games each person picked over the season
+tot_picks= NULL
+help = NULL
+for (i in 1:dim(a)[1]){
+  for(j in 1:length(a)){
+    help[j] = wk_max[j]*ifelse(is.na(a[i,j])==T,0,1)
+    tot_picks[i] = sum(help)
+  }
+}
+
+#Creatign a vector of how many games each person picked correct over the season
+tot_correct = NULL
+help = NULL
+for (i in 1:dim(a)[1]){
+  tot_correct[i] = sum(a[i,], na.rm = T)
+}
+
+#adding how many weeks each person picked, season correct percentage, and adjusted season percentag to the data frame and sorting the data
+indiv_disp = season %>% add_column(Weeks_Picked = tot_week) %>%
+  add_column(tot_correct)%>%
+  add_column(tot_picks)%>%
+  mutate(Season_Percent = round(tot_correct/tot_picks,4))%>%
+  mutate(Adj_Season_Percent=round(Season_Percent*(tot_week/length(a)),4)) %>%
+  select(-tot_correct, -tot_picks) %>%
   arrange(desc(Percent), desc(Season_Percent)) %>%
-  mutate(Adj_Season_Percent = round(Season_Percent*(Weeks_Picked/max(Weeks_Picked)),4))%>%
   mutate(Percent = ifelse(is.na(Percent)==T, 0, Percent))
+  
+
+# #determining how many weeks each person picked, season correct percentage, and adjusted season percentage.
+# indiv_disp = season %>%
+#   mutate(w1p = ifelse(is.na(Week_1)==T,0,1)) %>%
+#   mutate(w2p = ifelse(is.na(Week_2)==T,0,1)) %>%
+#   mutate(w3p = ifelse(is.na(Week_3)==T,0,1)) %>%
+#   mutate(w4p = ifelse(is.na(Week_4)==T,0,1)) %>%
+#   mutate(w5p = ifelse(is.na(Week_5)==T,0,1)) %>%
+#   mutate(w6p = ifelse(is.na(Week_6)==T,0,1)) %>%
+#   mutate(w7p = ifelse(is.na(Week_7)==T,0,1)) %>%
+#   mutate(w8p = ifelse(is.na(Week_8)==T,0,1)) %>%
+#   mutate(w9p = ifelse(is.na(Week_9)==T,0,1)) %>%
+#   mutate(w10p = ifelse(is.na(Week_10)==T,0,1)) %>%
+#   mutate(w11p = ifelse(is.na(Week_11)==T,0,1)) %>%
+#   mutate(Weeks_Picked = w1p+w2p+w3p+w4p+w5p+w6p+w7p+w8p+w9p+w10p+w11p) %>%
+#   mutate(games_picked = ((w1p*wk1_n)+(w2p*wk2_n)+(w3p*wk3_n)+(w4p*wk4_n)+(w5p*wk5_n)+
+#                            (w6p*wk6_n)+(w7p*wk7_n)+(w8p*wk8_n)+(w9p*wk9_n)+(w10p*wk10_n)+
+#                            (w11p*n))) %>%
+#   mutate(Season_Percent = round(((ifelse(is.na(Week_1)==T, 0, Week_1) + 
+#                              ifelse(is.na(Week_2)==T,0,Week_2) +
+#                              ifelse(is.na(Week_3)==T,0,Week_3)+
+#                              ifelse(is.na(Week_4)==T,0,Week_4)+
+#                              ifelse(is.na(Week_5)==T,0,Week_5)+
+#                              ifelse(is.na(Week_6)==T,0,Week_6)+
+#                              ifelse(is.na(Week_7)==T,0,Week_7)+
+#                              ifelse(is.na(Week_8)==T,0,Week_8)+
+#                              ifelse(is.na(Week_9)==T,0,Week_9)+
+#                              ifelse(is.na(Week_10)==T,0,Week_10)+
+#                              ifelse(is.na(Week_11)==T,0,Week_11))/games_picked),4)) %>%
+#   select(name, Week_1, Week_2, Week_3, Week_4, Week_5, Week_6, Week_7, Week_8, Week_9, Week_10, 
+#          Week_11, Percent, Weeks_Picked, Season_Percent) %>%
+#   arrange(desc(Percent), desc(Season_Percent)) %>%
+#   mutate(Adj_Season_Percent = round(Season_Percent*(Weeks_Picked/max(Weeks_Picked)),4))%>%
+#   mutate(Percent = ifelse(is.na(Percent)==T, 0, Percent))
 ```
 
 ```{r individual, include=FALSE}
@@ -326,7 +369,7 @@ improvement_formatter <-
              x ~ icontext(ifelse(x == max(x), "star", ""), x))
 
 # Creating individual results table
-Week_11_indiv = formattable(indiv_disp,
+current_indiv = formattable(indiv_disp,
             align =c("l","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c"), 
             list(
               `Indicator Name` = formatter("span", 
@@ -336,13 +379,13 @@ Week_11_indiv = formattable(indiv_disp,
               "Adj_Season_Percent" = improvement_formatter
               
 ))
-Week_11_indiv
+current_indiv
 ```
 
 ```{r individual Display, echo=FALSE}
 # Printing the individual plot 
 indi = indiv_disp %>% 
-  select(name, Week_1, Week_2, Week_3, Week_4, Week_5, Week_6, Week_7, Week_8, Week_9, Week_10, Percent) %>%
+  select(name, starts_with("Week"), Percent) %>%
   mutate(Week_1 = Week_1/(wk1_n))%>%
   mutate(Week_2 = Week_2/(wk2_n))%>%
   mutate(Week_3 = Week_3/(wk3_n))%>%
@@ -379,7 +422,7 @@ ggplot(i_df, aes(x = we2, y = we1, group = na, color = na))+
 
 ```{r combined, echo=FALSE}
 ##comvined cadet and instructor prediction
-c_games = cadet_wk11%>% janitor::clean_names() %>%
+c_games = c_data%>% janitor::clean_names() %>%
   select(starts_with("game"))  #Creating the set of just games
 
 tot_games = rbind(games, c_games)
@@ -419,7 +462,7 @@ formattable(total,
 
 t_correct_count = count(total, Correct)
 t_weekly_win_percentage = round(t_correct_count$n[which(t_correct_count$Correct == "Yes")]/n,4)
-tot_pickers = dim(data)[1] + dim(cadet_wk10)[1]
+tot_pickers = dim(data)[1] + dim(c_data)[1]
 ```
 `r paste("Our win percentage for combined predictions is", t_weekly_win_percentage, sep = " ") `
 
@@ -447,7 +490,7 @@ ggplot(c_df, aes(x = weeks, y = c_wins, group = 1))+
 
 ```{r matched week 2, echo=FALSE}
 #### Che checking the win percentage where instructor and cadet predictions match 
-c_games = cadet_wk11 %>% janitor::clean_names() %>%
+c_games = c_data %>% janitor::clean_names() %>%
   select(starts_with("game"))  #Creating the set of just games
 
 # creating a table of predictions and votes for and against the prediction
@@ -489,7 +532,7 @@ matched_win = round(mat$n[which(mat$Correct == "Yes")]/sum(mat$n),4)
 
 `r paste("Matched cadet instructor win percentage this week is", matched_win, sep = " ") `
 
-```{r pregame, eval=FALSE, include=FALSE}
+```{r pregame, echo=FALSE}
 #Predictions for the week
 Pregame = tibble(Game = 1:length(games)) %>% 
   add_column(Prediction = pred)

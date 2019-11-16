@@ -180,3 +180,43 @@ c = function(x, winners){
 
 results = map2(pred,winners, c)
 results
+
+
+#################################################### Testing indiv Function
+
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(formattable)
+library(ggpubr)
+library(ggrepel)
+
+week_1 = read_csv("NFL Week 1.csv")
+wk1_winners = c("Green Bay Packers","Minnesota Vikings","Baltimore Ravens","Buffalo Bills","Kansas City Chiefs",
+                "Los Angeles Rams","Tennessee Titans","Philadelphia Eagles","Seattle Seahawks","Los Angeles Chargers",
+                "TIE","Dallas Cowboys","San Francisco 49ers","New England Patriots","New Orleans Saints","Oakland Raiders")
+# Calculating Week 1 Individual Results
+
+indiv_weekly_pred = function(x,y){
+  indiv = x %>% janitor::clean_names() %>%
+    select(name, starts_with("game")) 
+  
+  games_wk = indiv %>%
+    select(-name)
+  
+  indiv_correct_wk = NULL
+  help = NULL
+  for (i in 1:length(indiv$name)){
+    for(j in 1:length(games_wk)){
+      help[j] = ifelse(games_wk[i,j]==y[j],1,0)
+      indiv_correct_wk[i] = sum(help)
+    }
+  }
+  season_wk = indiv %>%
+    select(name) %>%
+    add_column(Week = indiv_correct_wk)
+  return(season_wk)
+}
+
+season = indiv_weekly_pred(week_1, wk1_winners)
