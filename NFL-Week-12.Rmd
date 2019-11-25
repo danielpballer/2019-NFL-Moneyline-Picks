@@ -92,9 +92,9 @@ wk10_combined_wins = 3 # number of combined wins in week 10 # update this
 wk11_combined_wins = 12 # number of combined wins in week 11 # update this
 
 # who actually won
-winners = c("Cleveland Browns","Atlanta Falcons", "Dallas Cowboys","Indianapolis Colts","Buffalo Bills","Baltimore Ravens","Minnesota Vikings","New York Jets","New Orleans Saints","San Francisco 49ers","Oakland Raiders","New England Patriots","Los Angeles Rams","Kansas City Chiefs")
+winners = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Tampa Bay Buccaneers","New Orleans Saints","Seattle Seahawks","Washington Redskins","New York Jets","Tennessee Titans","New England Patriots","San Francisco 49ers","Baltimore Ravens")
 
-CBSsports = c("Pittsburgh Steelers","Carolina Panthers", "Dallas Cowboys","Jacksonville Jaguars","Buffalo Bills","Baltimore Ravens","Minnesota Vikings","New York Jets","New Orleans Saints","San Francisco 49ers","Oakland Raiders","Philadelphia Eagles","Los Angeles Rams","Kansas City Chiefs")
+CBSsports = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Atlanta Falcons","New Orleans Saints","Philadelphia Eagles","Detroit Lions","Oakland Raiders","Jacksonville Jaguars","New England Patriots","Green Bay Packers","Baltimore Ravens")
 
 
 experts = ifelse(winners == CBSsports, 1, 0)
