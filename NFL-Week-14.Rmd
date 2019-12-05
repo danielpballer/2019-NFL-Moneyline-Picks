@@ -1,7 +1,7 @@
 ---
-title: "NFL Week 12, 2019"
+title: "NFL Week 14, 2019"
 author: "MAJ Daniel Baller"
-date: "11/19/2019"
+date: "12/04/2019"
 output: html_document
 ---
 
@@ -25,7 +25,9 @@ week_8 = read_csv("NFL Week 8.csv")
 week_9 = read_csv("NFL Week 9.csv")
 week_10 = read_csv("NFL Week 10.csv")
 week_11 = read_csv("NFL Week 11.csv") # Update
-data = read_csv("NFL Week 12.csv") # Update
+week_12 = read_csv("NFL Week 12.csv") # Update
+week_13 = read_csv("NFL Week 13.csv") # Update
+data = read_csv("NFL Week 13.csv") # Update
 cadet_wk1 = read_csv("NFL Week 1 MA206.csv")
 cadet_wk2 = read_csv("NFL Week 2 MA206.csv")
 cadet_wk3 = read_csv("NFL Week 3 MA206.csv")
@@ -37,13 +39,15 @@ cadet_wk8 = read_csv("NFL Week 8 MA206.csv")
 cadet_wk9 = read_csv("NFL Week 9 MA206.csv") 
 cadet_wk10 = read_csv("NFL Week 10 MA206.csv")
 cadet_wk11 = read_csv("NFL Week 11 MA206.csv")
-c_data = read_csv("NFL Week 12 MA206.csv") # Update
+cadet_wk12 = read_csv("NFL Week 12 MA206.csv")
+cadet_wk13 = read_csv("NFL Week 13 MA206.csv") # Update
+c_data = read_csv("NFL Week 13 MA206.csv") # Update
 ```
 
 ```{r games, include=FALSE}
 #basic info
 
-n = 14 #number of games this week
+n = 16 #number of games this week
 wk1_n = 16 # number of games in week 1
 wk2_n = 16 # number of games in week 2
 wk3_n = 16 # number of games in week 3
@@ -55,7 +59,9 @@ wk8_n = 15 # number of games in week 8
 wk9_n = 14 # number of games in week 9
 wk10_n = 13 # number of games in week 10
 wk11_n = 14 # number of games in week 11
-wk_max = c(wk1_n, wk2_n, wk3_n, wk4_n, wk5_n, wk6_n, wk7_n, wk8_n, wk9_n, wk10_n, wk11_n, n)
+wk12_n = 14 # number of games in week 12
+wk13_n = 16 # number of games in week 13
+wk_max = c(wk1_n, wk2_n, wk3_n, wk4_n, wk5_n, wk6_n, wk7_n, wk8_n, wk9_n, wk10_n, wk11_n, wk12_n, wk13_n, n)
 g1_n = 16 # number of group picks in week 1
 g2_n = 16 # number of group picks in week 2
 g3_n = 16 # number of group picks in week 3
@@ -67,6 +73,8 @@ g8_n = 15 # number of group picks in week 8
 g9_n = 14 # number of group picks in week 9
 g10_n = 13 # number of group picks in week 10
 g11_n = 13 # number of group picks in week 11
+g12_n = 14 # number of group picks in week 12
+g13_n = 16 # number of group picks in week 13
 
 wk1_wins = 10 #number of wins in week 1
 wk2_wins = 10 #number of wins in week 2
@@ -78,7 +86,9 @@ wk7_wins = 9 #number of wins in week 7
 wk8_wins = 13 #number of wins in week 8 
 wk9_wins = 7 #number of wins in week 9
 wk10_wins = 5 #number of wins in week 10
-wk11_wins = 11 #number of wins in week 11 #update this
+wk11_wins = 11 #number of wins in week 11 
+wk12_wins = 10 #number of wins in week 12
+wk13_wins = 8 #number of wins in week 13 #update this
 wk1_combined_wins = 12 # number of combined wins in week 1
 wk2_combined_wins = 10 # number of combined wins in week 2
 wk3_combined_wins = 10 # number of combined wins in week 3 
@@ -88,13 +98,15 @@ wk6_combined_wins = 7 # number of combined wins in week 6
 wk7_combined_wins = 10 # number of combined wins in week 7 
 wk8_combined_wins = 13 # number of combined wins in week 8
 wk9_combined_wins = 7 # number of combined wins in week 9 
-wk10_combined_wins = 3 # number of combined wins in week 10 # update this
-wk11_combined_wins = 12 # number of combined wins in week 11 # update this
+wk10_combined_wins = 3 # number of combined wins in week 10 
+wk11_combined_wins = 12 # number of combined wins in week 11 
+wk12_combined_wins = 11 # number of combined wins in week 12
+wk13_combined_wins = 11 # number of combined wins in week 13 # update this
 
 # who actually won
-winners = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Tampa Bay Buccaneers","New Orleans Saints","Seattle Seahawks","Washington Redskins","New York Jets","Tennessee Titans","New England Patriots","San Francisco 49ers","Baltimore Ravens")
+winners = c("Chicago Bears","Buffalo Bills","New Orleans Saints","Tennessee Titans","Cincinnati Bengals","Washington Redskins","Baltimore Ravens","Tampa Bay Buccaneers","Pittsburgh Steelers","Green Bay Packers","Miami Dolphins","Los Angeles Rams","Denver Broncos","Kansas City Chiefs","Houston Texans","Seattle Seahawks")
 
-CBSsports = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Atlanta Falcons","New Orleans Saints","Philadelphia Eagles","Detroit Lions","Oakland Raiders","Jacksonville Jaguars","New England Patriots","Green Bay Packers","Baltimore Ravens")
+CBSsports = c("Chicago Bears","Buffalo Bills","New Orleans Saints","Indianapolis Colts","New York Jets","Carolina Panthers","Baltimore Ravens","Tampa Bay Buccaneers","Cleveland Browns","Green Bay Packers","Philadelphia Eagles","Arizona Cardinals","Los Angeles Chargers","Kansas City Chiefs","New England Patriots","Seattle Seahawks")
 
 
 experts = ifelse(winners == CBSsports, 1, 0)
@@ -122,6 +134,11 @@ wk9_winners = c("San Francisco 49ers","Houston Texans", "Philadelphia Eagles","P
 wk10_winners = c("Oakland Raiders","Baltimore Ravens","Cleveland Browns","Chicago Bears","New York Jets","Tennessee Titans","Tampa Bay Buccaneers","Atlanta Falcons","Miami Dolphins","Pittsburgh Steelers","Green Bay Packers","Minnesota Vikings","Seattle Seahawks")
 
 wk11_winners = c("Cleveland Browns","Atlanta Falcons", "Dallas Cowboys","Indianapolis Colts","Buffalo Bills","Baltimore Ravens","Minnesota Vikings","New York Jets","New Orleans Saints","San Francisco 49ers","Oakland Raiders","New England Patriots","Los Angeles Rams","Kansas City Chiefs")
+
+wk12_winners = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Tampa Bay Buccaneers","New Orleans Saints","Seattle Seahawks","Washington Redskins","New York Jets","Tennessee Titans","New England Patriots","San Francisco 49ers","Baltimore Ravens")
+
+wk13_winners = c("Chicago Bears","Buffalo Bills","New Orleans Saints","Tennessee Titans","Cincinnati Bengals","Washington Redskins","Baltimore Ravens","Tampa Bay Buccaneers","Pittsburgh Steelers","Green Bay Packers","Miami Dolphins","Los Angeles Rams","Denver Broncos","Kansas City Chiefs","Houston Texans","Seattle Seahawks")
+
 ```
 
 ```{r Group Historical CBS, include=FALSE}
@@ -146,6 +163,10 @@ wk11_winners = c("Cleveland Browns","Atlanta Falcons", "Dallas Cowboys","Indiana
 #wk10_CPSsports = c("Oakland Raiders","Baltimore Ravens","Buffalo Bills","Detroit Lions","New York Giants","Kansas City Chiefs","Tampa Bay Buccaneers","New Orleans Saints","Indianapolis Colts","Los Angeles Rams","Green Bay Packers","Minnesota Vikings","Seattle Seahawks")
 
 #wk11_CBSsports = c("Pittsburgh Steelers","Carolina Panthers", "Dallas Cowboys","Jacksonville Jaguars","Buffalo Bills","Baltimore Ravens","Minnesota Vikings","New York Jets","New Orleans Saints","San Francisco 49ers","Oakland Raiders","Philadelphia Eagles","Los Angeles Rams","Kansas City Chiefs")
+
+#wk12_CBSsports = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Atlanta Falcons","New Orleans Saints","Philadelphia Eagles","Detroit Lions","Oakland Raiders","Jacksonville Jaguars","New England Patriots","Green Bay Packers","Baltimore Ravens")
+
+#wk13_CBSsports = c("Chicago Bears","Buffalo Bills","New Orleans Saints","Indianapolis Colts","New York Jets","Carolina Panthers","Baltimore Ravens","Tampa Bay Buccaneers","Cleveland Browns","Green Bay Packers","Philadelphia Eagles","Arizona Cardinals","Los Angeles Chargers","Kansas City Chiefs","New England Patriots","Seattle Seahawks")
 ```
 
 ## Group Predictions
@@ -204,9 +225,9 @@ formattable(results,
 correct_count = count(results, Correct)
 weekly_win_percentage = round(correct_count$n[which(correct_count$Correct == "Yes")]/(n-ifelse(identical(correct_count$n[which(correct_count$Correct == "--")], integer(0))==TRUE, 0, correct_count$n[which(correct_count$Correct == "--")])),4)
 group_games = (n-ifelse(identical(correct_count$n[which(correct_count$Correct == "--")], integer(0))==TRUE, 0, correct_count$n[which(correct_count$Correct == "--")]))
-season_games = group_games+g1_n+g2_n+g3_n+g4_n+g5_n+g6_n+g7_n+g8_n+g9_n+g10_n+g11_n
+season_games = group_games+g1_n+g2_n+g3_n+g4_n+g5_n+g6_n+g7_n+g8_n+g9_n+g10_n+g11_n+g12_n+g13_n #Update
 season_wins  = wk1_wins+wk2_wins+wk3_wins+wk4_wins+wk5_wins+wk6_wins+wk7_wins+wk8_wins+wk9_wins+
-  wk10_wins+wk11_wins+correct_count$n[which(correct_count$Correct == "Yes")]
+  wk10_wins+wk11_wins+wk12_wins+wk13_wins+correct_count$n[which(correct_count$Correct == "Yes")] #Update
 season_win_percentage = round(season_wins/(season_games),4)
 Total = dim(data)[1]
 ```
@@ -226,9 +247,10 @@ Total = dim(data)[1]
 #Previous Weeks
 wins = round(c((wk1_wins/g1_n),(wk2_wins/g2_n),(wk3_wins/g3_n), (wk4_wins/g4_n), (wk5_wins/g5_n),
                (wk6_wins/g6_n),(wk7_wins/g7_n),(wk8_wins/g8_n), (wk9_wins/g9_n),
-               (wk10_wins/g10_n),(wk11_wins/g11_n),  weekly_win_percentage),4)
+               (wk10_wins/g10_n),(wk11_wins/g11_n),(wk12_wins/g12_n),(wk13_wins/g13_n),
+               weekly_win_percentage),4) #Update
 weeks = c("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9",
-          "Week_10", "Week_11", "Week_12")
+          "Week_10", "Week_11", "Week_12", "Week_13", "Week_14") #Update
 df = as.data.frame(wins, weeks)
 
 ggplot(df, aes(x = weeks, y = wins, group = 1))+
@@ -294,9 +316,13 @@ season = indiv_weekly_pred(week_1, wk1_winners) %>%
       rename("Week_10" = Week)) %>%
   full_join(indiv_weekly_pred(week_11, wk11_winners) %>%
       rename("Week_11" = Week)) %>%
-  full_join(indiv_weekly_pred(data, winners) %>% ####### Add line for previous week and update to current week
+  full_join(indiv_weekly_pred(week_12, wk12_winners) %>%
       rename("Week_12" = Week)) %>%
-  mutate(Percent = round(Week_12/n,4)) %>%
+  full_join(indiv_weekly_pred(week_13, wk13_winners) %>%
+      rename("Week_13" = Week)) %>%
+  full_join(indiv_weekly_pred(data, winners) %>% ####### Add line for previous week and update to current week
+      rename("Week_14" = Week)) %>%
+  mutate(Percent = round(Week_14/n,4)) %>%
   arrange(-Percent)
 
 #Creating a dataframe with only the weekly picks
@@ -352,7 +378,7 @@ improvement_formatter <-
 
 # Creating individual results table
 current_indiv = formattable(indiv_disp,
-            align =c("l","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c"), 
+            align =c("l","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c"), 
             list(
               `Indicator Name` = formatter("span", 
                                 style = ~ style(color = "grey",font.weight = "bold")),
@@ -379,15 +405,18 @@ indi = indiv_disp %>%
   mutate(Week_9 = Week_9/(wk9_n))%>%
   mutate(Week_10 = Week_10/(wk10_n))%>%
   mutate(Week_11 = Week_11/(wk11_n))%>%
+  mutate(Week_12 = Week_12/(wk12_n))%>%
+  mutate(Week_13 = Week_13/(wk13_n))%>%#Update
   as.data.frame()
-na = rep(indi$name, 12)
-we1 = c(indi$Week_1,indi$Week_2,indi$Week_3,indi$Week_4, indi$Week_5, indi$Week_6, indi$Week_7, indi$Week_8, indi$Week_9,indi$Week_10,indi$Week_11, indi$Percent)
+na = rep(indi$name, 14) # Update
+we1 = c(indi$Week_1,indi$Week_2,indi$Week_3,indi$Week_4, indi$Week_5, indi$Week_6, indi$Week_7, indi$Week_8, indi$Week_9,indi$Week_10,indi$Week_11,indi$Week_12,indi$Week_13, indi$Percent) # Update
 we2 = c(rep("Week 1", length(indi$name)), rep("Week 2", length(indi$name)),
         rep("Week 3", length(indi$name)), rep("Week 4", length(indi$name)),
         rep("Week 5", length(indi$name)), rep("Week 6", length(indi$name)),
         rep("Week 7", length(indi$name)), rep("Week 8", length(indi$name)),
-        rep("Week 9", length(indi$name)), rep("Week_10", length(indi$name)),
-        rep("Week_11", length(indi$name)),rep("Week_12", length(indi$name)))
+        rep("Week 9", length(indi$name)), rep("Week 10", length(indi$name)),
+        rep("Week 11", length(indi$name)),rep("Week 12", length(indi$name)),
+        rep("Week 13", length(indi$name)),rep("Week_14", length(indi$name))) #Update
 i_df = cbind.data.frame(na, we1, we2)
 
 ggplot(i_df, aes(x = we2, y = we1, group = na, color = na))+
@@ -455,7 +484,8 @@ tot_pickers = dim(data)[1] + dim(c_data)[1]
 c_wins = round(c((wk1_combined_wins/wk1_n), (wk2_combined_wins/wk2_n),(wk3_combined_wins/wk3_n),
            (wk4_combined_wins/wk4_n), (wk5_combined_wins/wk5_n), (wk6_combined_wins/wk6_n),
            (wk7_combined_wins/wk7_n), (wk8_combined_wins/wk8_n), (wk9_combined_wins/wk9_n),
-           (wk10_combined_wins/wk10_n),(wk11_combined_wins/wk11_n), t_weekly_win_percentage), 4)
+           (wk10_combined_wins/wk10_n),(wk11_combined_wins/wk11_n),(wk12_combined_wins/wk12_n),
+           (wk13_combined_wins/wk13_n),t_weekly_win_percentage), 4) #Update
 c_df = as.data.frame(c_wins, weeks)
 
 ggplot(c_df, aes(x = weeks, y = c_wins, group = 1))+
