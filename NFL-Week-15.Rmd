@@ -111,10 +111,9 @@ wk13_combined_wins = 11 # number of combined wins in week 13
 wk14_combined_wins = 11 # number of combined wins in week 14 # update this
 
 # who actually won
-winners = c("Baltimore Ravens","Atlanta Falcons","Tampa Bay Buccaneers","New York Jets","San Francisco 49ers","Minnesota Vikings","Denver Broncos","Baltimore Ravens","Cleveland Browns","Green Bay Packers","Los Angeles Chargers","Pittsburgh Steelers","Tennessee Titans","Kansas City Chiefs","Los Angeles Rams","Philadelphia Eagles")
+winners = c("Baltimore Ravens","New England Patriots","Tampa Bay Buccaneers","Houston Texans","Kansas City Chiefs","New York Giants","Philadelphia Eagles","Seattle Seahawks","Green Bay Packers","Minnesota Vikings","Oakland Raiders","Arizona Cardinals","Dallas Cowboys","Atlanta Falcons","Buffalo Bills","New Orleans Saints")
 
-CBSsports = c("Chicago Bears","Carolina Panthers","Indianapolis Colts","Miami Dolphins","New Orleans Saints","Minnesota Vikings","Houston Texans","Baltimore Ravens","Cleveland Browns","Green Bay Packers","Los Angeles Chargers","Pittsburgh Steelers","Tennessee Titans","Kansas City Chiefs","Seattle Seahawks","Philadelphia Eagles")
-
+CBSsports = c("Baltimore Ravens","New England Patriots","Tampa Bay Buccaneers","Tennessee Titans","Kansas City Chiefs","Miami Dolphins","Philadelphia Eagles","Seattle Seahawks","Chicago Bears","Los Angeles Chargers","Oakland Raiders","Cleveland Browns","Los Angeles Rams","San Francisco 49ers","Buffalo Bills","New Orleans Saints")
 
 experts = ifelse(winners == CBSsports, 1, 0)
 CBS = round(sum(experts)/n,4)
@@ -428,10 +427,10 @@ we2 = c(rep("Week 1", length(indi$name)), rep("Week 2", length(indi$name)),
         rep("Week 3", length(indi$name)), rep("Week 4", length(indi$name)),
         rep("Week 5", length(indi$name)), rep("Week 6", length(indi$name)),
         rep("Week 7", length(indi$name)), rep("Week 8", length(indi$name)),
-        rep("Week 9", length(indi$name)), rep("Week 10", length(indi$name)),
-        rep("Week 11", length(indi$name)),rep("Week 12", length(indi$name)),
-        rep("Week 13", length(indi$name)),rep("Week_14", length(indi$name)),
-        rep("Week_14", length(indi$name))) #Update
+        rep("Week 9", length(indi$name)), rep("Week_10", length(indi$name)),
+        rep("Week_11", length(indi$name)),rep("Week_12", length(indi$name)),
+        rep("Week_13", length(indi$name)),rep("Week_14", length(indi$name)),
+        rep("Week_15", length(indi$name))) #Update
 i_df = cbind.data.frame(na, we1, we2)
 
 ggplot(i_df, aes(x = we2, y = we1, group = na, color = na))+

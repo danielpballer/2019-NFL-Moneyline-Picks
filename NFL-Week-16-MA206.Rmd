@@ -1,0 +1,461 @@
+---
+title: "NFL Week 16 MA206, 2019"
+author: "MAJ Daniel Baller"
+date: "12/25/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(formattable)
+library(ggpubr)
+library(ggrepel)
+# week_1 = read_csv("NFL Week 1.csv")
+# week_2 = read_csv("NFL Week 2.csv")
+# week_3 = read_csv("NFL Week 3.csv")
+# week_4 = read_csv("NFL Week 4.csv")
+# week_5 = read_csv("NFL Week 5.csv")
+# week_6 = read_csv("NFL Week 6.csv")
+# week_7 = read_csv("NFL Week 7.csv")
+# week_8 = read_csv("NFL Week 8.csv")
+# week_9 = read_csv("NFL Week 9.csv")
+# week_10 = read_csv("NFL Week 10.csv")
+# week_11 = read_csv("NFL Week 11.csv") # Update
+# week_12 = read_csv("NFL Week 12.csv") # Update
+# week_13 = read_csv("NFL Week 13.csv") # Update
+# week_14 = read_csv("NFL Week 14.csv") # Update
+# week_15 = read_csv("NFL Week 15.csv") # Update
+# data = read_csv("NFL Week 16.csv") # Update
+week_1 = read_csv("NFL Week 1 MA206.csv")
+week_2 = read_csv("NFL Week 2 MA206.csv")
+week_3 = read_csv("NFL Week 3 MA206.csv")
+week_4 = read_csv("NFL Week 4 MA206.csv")
+week_5 = read_csv("NFL Week 5 MA206.csv")
+week_6 = read_csv("NFL Week 6 MA206.csv")
+week_7 = read_csv("NFL Week 7 MA206.csv") 
+week_8 = read_csv("NFL Week 8 MA206.csv") 
+week_9 = read_csv("NFL Week 9 MA206.csv") 
+week_10 = read_csv("NFL Week 10 MA206.csv")
+week_11 = read_csv("NFL Week 11 MA206.csv")
+week_12 = read_csv("NFL Week 12 MA206.csv")
+week_13 = read_csv("NFL Week 13 MA206.csv") 
+week_14 = read_csv("NFL Week 14 MA206.csv") 
+week_15 = read_csv("NFL Week 15 MA206.csv") 
+data = read_csv("NFL Week 16 MA206.csv") # Update
+```
+
+```{r games, include=FALSE}
+#basic info
+
+n = 10 #number of games this week
+wk1_n = 16 # number of games in week 1
+wk2_n = 16 # number of games in week 2
+wk3_n = 16 # number of games in week 3
+wk4_n = 15 # number of games in week 4
+wk5_n = 15 # number of games in week 5
+wk6_n = 13 # number of games in week 6
+wk7_n = 14 # number of games in week 7
+wk8_n = 15 # number of games in week 8
+wk9_n = 14 # number of games in week 9
+wk10_n = 13 # number of games in week 10
+wk11_n = 14 # number of games in week 11
+wk12_n = 14 # number of games in week 12
+wk13_n = 16 # number of games in week 13
+wk14_n = 16 # number of games in week 14
+wk15_n = 16 # number of games in week 15
+wk_max = c(wk1_n, wk2_n, wk3_n, wk4_n, wk5_n, wk6_n, wk7_n, wk8_n, wk9_n, wk10_n, wk11_n, wk12_n, wk13_n, wk14_n,wk15_n, n)
+g1_n = 16 # number of group picks in week 1
+g2_n = 16 # number of group picks in week 2
+g3_n = 16 # number of group picks in week 3
+g4_n = 15 # number of group picks in week 4
+g5_n = 15 # number of group picks in week 5
+g6_n = 13 # number of group picks in week 6
+g7_n = 14 # number of group picks in week 7
+g8_n = 15 # number of group picks in week 8
+g9_n = 14 # number of group picks in week 9
+g10_n = 13 # number of group picks in week 10
+g11_n = 13 # number of group picks in week 11
+g12_n = 14 # number of group picks in week 12
+g13_n = 16 # number of group picks in week 13
+g14_n = 16 # number of group picks in week 14
+g15_n = 16 # number of group picks in week 15
+
+wk1_wins = 10 #number of wins in week 1
+wk2_wins = 10 #number of wins in week 2
+wk3_wins = 12 #number of wins in week 3
+wk4_wins = 8 #number of wins in week 4 
+wk5_wins = 8 #number of wins in week 5 
+wk6_wins = 6 #number of wins in week 6 
+wk7_wins = 9 #number of wins in week 7 
+wk8_wins = 13 #number of wins in week 8 
+wk9_wins = 7 #number of wins in week 9
+wk10_wins = 5 #number of wins in week 10
+wk11_wins = 12 #number of wins in week 11 
+wk12_wins = 11 #number of wins in week 12
+wk13_wins = 10 #number of wins in week 13 
+wk14_wins = 9 #number of wins in week 14 
+wk15_wins = 12 #number of wins in week 15 #update this
+
+wk1_combined_wins = 12 # number of combined wins in week 1
+wk2_combined_wins = 10 # number of combined wins in week 2
+wk3_combined_wins = 10 # number of combined wins in week 3 
+wk4_combined_wins = 8 # number of combined wins in week 4 
+wk5_combined_wins = 9 # number of combined wins in week 5 
+wk6_combined_wins = 7 # number of combined wins in week 6 
+wk7_combined_wins = 10 # number of combined wins in week 7 
+wk8_combined_wins = 13 # number of combined wins in week 8
+wk9_combined_wins = 7 # number of combined wins in week 9 
+wk10_combined_wins = 3 # number of combined wins in week 10 
+wk11_combined_wins = 12 # number of combined wins in week 11 
+wk12_combined_wins = 11 # number of combined wins in week 12
+wk13_combined_wins = 11 # number of combined wins in week 13 
+wk14_combined_wins = 11 # number of combined wins in week 14 
+wk15_combined_wins = 12 # number of combined wins in week 15 # update this
+
+# who actually won
+winners = c("Houston Texans","New England Patriots","San Francisco 49ers","Indianapolis Colts","Baltimore Ravens","Atlanta Falcons","New Orleans Saints","Oakland Raiders","Denver Broncos","Green Bay Packers")
+
+CBSsports = c("Tampa Bay Buccaneers","Buffalo Bills","San Francisco 49ers","Indianapolis Colts","Baltimore Ravens","Atlanta Falcons","New Orleans Saints","Los Angeles Chargers","Denver Broncos","Green Bay Packers")
+
+experts = ifelse(winners == CBSsports, 1, 0)
+CBS = round(sum(experts)/n,4)
+
+#### Previous Weeks Winners #####
+wk1_winners = c("Green Bay Packers","Minnesota Vikings","Baltimore Ravens","Buffalo Bills","Kansas City Chiefs","Los Angeles Rams","Tennessee Titans","Philadelphia Eagles","Seattle Seahawks","Los Angeles Chargers","TIE","Dallas Cowboys","San Francisco 49ers","New England Patriots","New Orleans Saints","Oakland Raiders")
+
+wk2_winners = c("Tampa Bay Buccaneers","Baltimore Ravens","Dallas Cowboys","Indianapolis Colts","Seattle Seahawks","Buffalo Bills","San Fransisco 49ers","Detroit Lions","Green Bay Packers","Houston Texans","New England Patriots","Kansas City Chiefs","Los Angeles Rams","Chicago Bears","Atlanta Falcons","Cleveland Browns")
+
+wk3_winners = c("Jacksonville Jaguars","Buffalo Bills","Detroit Lions","New England Patriots","Minnesota Vikings","Kansas City Chiefs","Indianapolis Colts","Green Bay Packers","Dallas Cowboys","New York Giants","Carolina Panthers","San Francisco 49ers","New Orleans Saints","Houston Texans","Los Angeles Rams","Chicago Bears") 
+
+wk4_winners = c("Philadelphia Eagles","Tennessee Titans","New York Giants","Los Angeles Chargers","Oakland Raiders","Carolina Panthers","Kansas City Chiefs","Cleveland Browns","New England Patriots","Tampa Bay Buccaneers","Seattle Seahawks","Chicago Bears","Jacksonville Jaguars","New Orleans Saints","Pittsburgh Steelers")
+
+wk5_winners = c("Seattle Seahawks","Carolina Panthers","New England Patriots","Buffalo Bills","Baltimore Ravens","Arizona Cardinals","Houston Texans","New Orleans Saints","Minnesota Vikings","Oakland Raiders","Philadelphia Eagles","Denver Broncos","Green Bay Packers","Indianapolis Colts","San Francisco 49ers") 
+
+wk6_winners = c("New England Patriots","Carolina Panthers","Washington Redskins","Minnesota Vikings","Houston Texans","New Orleans Saints","Seattle Seahawks","San Francisco 49ers","Arizona Cardinals","New York Jets","Denver Broncos","Pittsburgh Steelers","Green Bay Packers") 
+
+wk7_winners = c("Kansas City Chiefs","Buffalo Bills","Jacksonville Jaguars","Minnesota Vikings","Green Bay Packers","Los Angeles Rams","Indianapolis Colts","San Francisco 49ers","Arizona Cardinals","Tennessee Titans","New Orleans Saints","Baltimore Ravens","Dallas Cowboys","New England Patriots")
+
+wk8_winners = c("Minnesota Vikings","Seattle Seahawks","Indianapolis Colts","Tennessee Titans","New Orleans Saints","Los Angeles Rams","Philadelphia Eagles","Los Angeles Chargers","Detroit Lions","Jacksonville Jaguars","San Francisco 49ers","Houston Texans","New England Patriots","Green Bay Packers","Pittsburgh Steelers")
+
+wk9_winners = c("San Francisco 49ers","Houston Texans", "Philadelphia Eagles","Pittsburgh Steelers","Miami Dolphins","Kansas City Chiefs","Carolina Panthers","Buffalo Bills","Seattle Seahawks","Oakland Raiders","Los Angeles Chargers","Denver Broncos","Baltimore Ravens","Dallas Cowboys") 
+
+wk10_winners = c("Oakland Raiders","Baltimore Ravens","Cleveland Browns","Chicago Bears","New York Jets","Tennessee Titans","Tampa Bay Buccaneers","Atlanta Falcons","Miami Dolphins","Pittsburgh Steelers","Green Bay Packers","Minnesota Vikings","Seattle Seahawks")
+
+wk11_winners = c("Cleveland Browns","Atlanta Falcons", "Dallas Cowboys","Indianapolis Colts","Buffalo Bills","Baltimore Ravens","Minnesota Vikings","New York Jets","New Orleans Saints","San Francisco 49ers","Oakland Raiders","New England Patriots","Los Angeles Rams","Kansas City Chiefs")
+
+wk12_winners = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Tampa Bay Buccaneers","New Orleans Saints","Seattle Seahawks","Washington Redskins","New York Jets","Tennessee Titans","New England Patriots","San Francisco 49ers","Baltimore Ravens")
+
+wk13_winners = c("Chicago Bears","Buffalo Bills","New Orleans Saints","Tennessee Titans","Cincinnati Bengals","Washington Redskins","Baltimore Ravens","Tampa Bay Buccaneers","Pittsburgh Steelers","Green Bay Packers","Miami Dolphins","Los Angeles Rams","Denver Broncos","Kansas City Chiefs","Houston Texans","Seattle Seahawks")
+
+wk14_winners = c("Chicago Bears","Atlanta Falcons","Tampa Bay Buccaneers","New York Jets","San Francisco 49ers","Minnesota Vikings","Denver Broncos","Baltimore Ravens","Cleveland Browns","Green Bay Packers","Los Angeles Chargers","Pittsburgh Steelers","Tennessee Titans","Kansas City Chiefs","Los Angeles Rams","Philadelphia Eagles")
+
+wk15_winners = c("Baltimore Ravens","New England Patriots","Tampa Bay Buccaneers","Houston Texans","Kansas City Chiefs","New York Giants","Philadelphia Eagles","Seattle Seahawks","Green Bay Packers","Minnesota Vikings","Oakland Raiders","Arizona Cardinals","Dallas Cowboys","Atlanta Falcons","Buffalo Bills","New Orleans Saints")
+
+```
+
+```{r Group Historical CBS, include=FALSE}
+#wk1_CBSsports = c("Green Bay Packers","Atlanta Falcons","Miami Dolphins","New York Jets","Kansas City Chiefs","Carolina Panthers","Cleveland Browns","Philadelphia Eagles","Seattle Seahawks","Indianapolis Colts","Arizona Cardinals","Dallas Cowboys","Tampa Bay Buccaneers","Pittsburgh Steelers","New Orleans Saints","Oakland Raiders")
+
+#wk2_CBSsports = c("Carolina Panthers","Baltimore Ravens","Dallas Cowboys","Indianapolis Colts","Seattle Seahawks","Buffalo Bills","Cincinnati Bengals","Los Angeles Chargers","Green Bay Packers","Houston Texans","New England Patriots","Kansas City Chiefs","Los Angeles Rams","Chicago Bears","Philadelphia Eagles","Cleveland Browns")
+
+#wk3_CBSsports = c("Jacksonville Jaguars","Buffalo Bills","Philidelphia Eagles","New England Patriots","Minnesota Vikings","Baltimore Ravens","Atlanta Falcons","Green Bay Packers","Dallas Cowboys","Tampa Bay Buccaneers","Carolina Panthers","San Francisco 49ers","Seattle Seahawks","Los Angeles Chargers","Los Angeles Rams","Chicago Bears") 
+
+#wk4_CBSsports = c("Green Bay Packers","Atlanta Falcons","Washington Redskins","Los Angeles Chargers","Indianapolis Colts","Carolina Panthers","Kansas City Chiefs","Baltimore Ravens","New England Patriots","Los Angeles Rams","Seattle Seahawks","Chicago Bears","Jacksonville Jaguars","Dallas Cowboys","Pittsburgh Steelers")
+
+#Wk5_CBSsports = c("Seattle Seahawks","Jacksonville Jaguars","New England Patriots","Tennessee Titans","Baltimore Ravens","Cincinnati Bangals","Houston Texans","Tamps Bay Buccaneers","Minnesota Vikings","Chicago Bears","Philadelphia Eagles","Los Angeles Chargers","Dallas Cowboys","Kansas City Chiefs","Cleveland Browns")
+
+#wk6_CBSsports = c("New England Patriots","Tampa Bay Buccaneers","Washington Redskins","Philadelphia Eagles","Kansas City Chiefs","New Orleans Saints","Seattle Seahawks","San Francisco 49ers","Atlanta Falcons","Dallas Cowboys","Tennessee Titans","Los Angeles Chargers","Green Bay Packers")
+
+#wk7_CBSsports = c("Denver Broncos","Buffalo Bills", "Jacksonville Jaguars","Minnesota Vikings","Green Bay Packers","Los Angeles Rams","Houston Texans","San Francisco 49ers","Arizona Cardinals","Los Angeles Chargers","New Orleans Saints","Baltimore Ravens","Philadelphia Eagless","New England Patriots")
+
+#wk8_CBSsports = c("Minnesota Vikings","Seattle Seahawks","Indianapolis Colts","Tampa Bay Buccaneers","New Orleans Saints","Los Angeles Rams","Philadelphia Eagles","Los Angeles Chargers","Detroit Lions","Jacksonville Jaguars","San Francisco 49ers","Houston Texans","New England Patriots","Green Bay Packers","Pittsburgh Steelers")
+
+#wk9_CBSsports = c("San Francisco 49ers","Houston Texans", "Philadelphia Eagles","Indianapolis Colts","New York Jets","Minnesota Vikings","Carolina Panthers","Buffalo Bills","Seattle Seahawks","Oakland Raiders","Green Bay Packers","Cleveland Browns","Baltimore Ravens","Dallas Cowboys")
+
+#wk10_CPSsports = c("Oakland Raiders","Baltimore Ravens","Buffalo Bills","Detroit Lions","New York Giants","Kansas City Chiefs","Tampa Bay Buccaneers","New Orleans Saints","Indianapolis Colts","Los Angeles Rams","Green Bay Packers","Minnesota Vikings","Seattle Seahawks")
+
+#wk11_CBSsports = c("Pittsburgh Steelers","Carolina Panthers", "Dallas Cowboys","Jacksonville Jaguars","Buffalo Bills","Baltimore Ravens","Minnesota Vikings","New York Jets","New Orleans Saints","San Francisco 49ers","Oakland Raiders","Philadelphia Eagles","Los Angeles Rams","Kansas City Chiefs")
+
+#wk12_CBSsports = c("Houston Texans","Buffalo Bills", "Chicago Bears", "Pittsburgh Steelers","Cleveland Browns", "Atlanta Falcons","New Orleans Saints","Philadelphia Eagles","Detroit Lions","Oakland Raiders","Jacksonville Jaguars","New England Patriots","Green Bay Packers","Baltimore Ravens")
+
+#wk13_CBSsports = c("Chicago Bears","Buffalo Bills","New Orleans Saints","Indianapolis Colts","New York Jets","Carolina Panthers","Baltimore Ravens","Tampa Bay Buccaneers","Cleveland Browns","Green Bay Packers","Philadelphia Eagles","Arizona Cardinals","Los Angeles Chargers","Kansas City Chiefs","New England Patriots","Seattle Seahawks")
+
+#wk14_CBSsports = c("Chicago Bears","Carolina Panthers","Indianapolis Colts","Miami Dolphins","New Orleans Saints","Minnesota Vikings","Houston Texans","Baltimore Ravens","Cleveland Browns","Green Bay Packers","Los Angeles Chargers","Pittsburgh Steelers","Tennessee Titans","Kansas City Chiefs","Seattle Seahawks","Philadelphia Eagles")
+
+
+#wk15_CBSsports = c("Baltimore Ravens","New England Patriots","Tampa Bay Buccaneers","Tennessee Titans","Kansas City Chiefs","Miami Dolphins","Philadelphia Eagles","Seattle Seahawks","Chicago Bears","Los Angeles Chargers","Oakland Raiders","Cleveland Browns","Los Angeles Rams","San Francisco 49ers","Buffalo Bills","New Orleans Saints")
+```
+
+## Group Predictions
+
+```{r Group Predictions, include=FALSE}
+games = data %>% janitor::clean_names() %>%
+  select(starts_with("game"))  #Creating the set of just games
+
+# creating a table of predictions and votes for and against the prediction
+pred_table = data.frame(Game=colnames(games), 
+                        t(sapply(games, # apply following function to each column
+                                 function(x) {
+                                   t_x <- sort(table(x), decreasing=TRUE) # get the frequencies and sort them in decreasing order
+                                   list(Prediction=names(t_x)[1], # name of the value with highest frequency
+                                        votes_for=t_x[1], # highest frequency
+                                        votes_against=t_x[2]) # Lowest Freq
+                                 })))
+
+#establish vectors for precictions and votes for and against
+pred_table = pred_table %>% 
+  mutate(votes_against = ifelse(is.na(pred_table$votes_against)==T, 0, as.integer(pred_table$votes_against))) # turning NA in votes against column into 0
+pred = ifelse(as.numeric(pred_table$votes_for) == as.numeric(pred_table$votes_against), "Tie", as.character(pred_table$Prediction)) #choosing prediction or tie if no prediction
+#votes_for = ifelse(is.na(pred_table$votes_for)==T, 0, as.integer(pred_table$votes_for))
+votes_for = as.integer(pred_table$votes_for)
+votes_against = as.integer(pred_table$votes_against)
+
+results = tibble(Game = 1:length(games)) %>% 
+  add_column(Prediction = pred) %>%
+  add_column(Winners = winners) %>%
+  mutate(Correct = ifelse(Prediction =="Tie", "--", ifelse(Prediction == Winners, "Yes", "No"))) %>%
+  mutate(Correct_Votes = ifelse(Prediction == winners, votes_for, ifelse(winners == "TIE", 0, votes_against))) %>%
+  mutate(Percentage_For = round(Correct_Votes/dim(data)[1],4)) %>%
+  rename("Correct Votes" = Correct_Votes) %>%
+  rename("Correct Percent" = Percentage_For)
+results
+```
+
+```{r displaying group results, echo=FALSE}
+# formating for color of table
+improvement_formatter2 <- 
+  formatter("span", 
+            style = x ~ style(
+              font.weight = "bold", 
+              color = ifelse(x == "Yes", "green", ifelse(x =="No", "red", "black"))))
+
+
+# Creatign Group Prediction table            
+formattable(results, 
+            align =c("c","c","c"), 
+            list(
+              `Indicator Name` = formatter("span", 
+                                style = ~ style(color = "grey",font.weight = "bold")),
+                                "Correct" = improvement_formatter2))
+
+# Printing the weekly and season win percentage            
+correct_count = count(results, Correct)
+weekly_win_percentage = round(correct_count$n[which(correct_count$Correct == "Yes")]/(n-ifelse(identical(correct_count$n[which(correct_count$Correct == "--")], integer(0))==TRUE, 0, correct_count$n[which(correct_count$Correct == "--")])),4)
+group_games = (n-ifelse(identical(correct_count$n[which(correct_count$Correct == "--")], integer(0))==TRUE, 0, correct_count$n[which(correct_count$Correct == "--")]))
+season_games = group_games+g1_n+g2_n+g3_n+g4_n+g5_n+g6_n+g7_n+g8_n+g9_n+g10_n+g11_n+g12_n+
+  g13_n+g14_n+g15_n #Update
+season_wins  = wk1_wins+wk2_wins+wk3_wins+wk4_wins+wk5_wins+wk6_wins+wk7_wins+wk8_wins+wk9_wins+
+  wk10_wins+wk11_wins+wk12_wins+wk13_wins+wk14_wins+wk15_wins+correct_count$n[which(correct_count$Correct == "Yes")] #Update
+season_win_percentage = round(season_wins/(season_games),4)
+Total = dim(data)[1]
+```
+ `r paste("Our win percentage for the week is", weekly_win_percentage, sep = " ") `
+ 
+ `r paste("CBS Sports win percentage for the week is", CBS, sep = " ") `
+ 
+ `r paste("Our season win percentage so far is", season_win_percentage, sep = " ") `
+ 
+ `r paste("Games picked this season", season_games, sep = " ") `
+ 
+ `r paste("Correct Games this season", season_wins, sep = " ") `
+ 
+ `r paste(Total, "predictions this week", sep = " ") `
+
+```{r plotting group results, echo=FALSE}
+#Previous Weeks
+wins = round(c((wk1_wins/g1_n),(wk2_wins/g2_n),(wk3_wins/g3_n), (wk4_wins/g4_n), (wk5_wins/g5_n),
+               (wk6_wins/g6_n),(wk7_wins/g7_n),(wk8_wins/g8_n), (wk9_wins/g9_n),
+               (wk10_wins/g10_n),(wk11_wins/g11_n),(wk12_wins/g12_n),(wk13_wins/g13_n),
+               (wk14_wins/g14_n),(wk15_wins/g15_n), weekly_win_percentage),4) #Update
+weeks = c("Week 1", "Week 2", "Week 3", "Week 4", "Week 5", "Week 6", "Week 7", "Week 8", "Week 9",
+          "Week_10", "Week_11", "Week_12", "Week_13", "Week_14", "Week_15", "Week_16") #Update
+df = as.data.frame(wins, weeks)
+
+ggplot(df, aes(x = weeks, y = wins, group = 1))+
+  geom_point()+
+  geom_line()+
+  geom_text(aes(label=wins),hjust=0, vjust=-1.5)+
+  ylim(c(0, 1)) +
+  xlab("NFL Week") + 
+  ylab("Correct Percentage")+
+  ggtitle("Weekly Group Correct Percentage")+
+  theme_classic()
+```
+
+## Individual Predictions
+
+```{r individual correct over season, include=FALSE}
+############# Creating a function to calculate weekly correct picks #############
+
+indiv_weekly_pred = function(x,y){
+indiv = x %>% janitor::clean_names() %>%
+  select(name, starts_with("game")) 
+
+games_wk = indiv %>%
+  select(-name)
+
+indiv_correct_wk = NULL
+help = NULL
+for (i in 1:length(indiv$name)){
+  for(j in 1:length(games_wk)){
+    help[j] = ifelse(games_wk[i,j]==y[j],1,0)
+    indiv_correct_wk[i] = sum(help)
+  }
+}
+season_wk = indiv %>%
+  select(name) %>%
+  add_column(Week = indiv_correct_wk)
+return(season_wk)
+}
+###############################################################
+######### Weekly Individual Correct Picks #####################
+###############################################################
+
+#Calculating weekly correct pics for each person
+season = indiv_weekly_pred(week_1, wk1_winners) %>%
+  rename("Week_1" = Week)%>%
+  full_join(indiv_weekly_pred(week_2, wk2_winners) %>%
+      rename("Week_2" = Week))%>%
+  full_join(indiv_weekly_pred(week_3, wk3_winners) %>%
+      rename("Week_3" = Week)) %>%
+  full_join(indiv_weekly_pred(week_4, wk4_winners) %>%
+      rename("Week_4" = Week)) %>%
+  full_join(indiv_weekly_pred(week_5, wk5_winners) %>%
+      rename("Week_5" = Week)) %>%
+  full_join(indiv_weekly_pred(week_6, wk6_winners) %>%
+      rename("Week_6" = Week)) %>%
+  full_join(indiv_weekly_pred(week_7, wk7_winners) %>%
+      rename("Week_7" = Week)) %>%
+  full_join(indiv_weekly_pred(week_8, wk8_winners) %>%
+      rename("Week_8" = Week)) %>%
+  full_join(indiv_weekly_pred(week_9, wk9_winners) %>%
+      rename("Week_9" = Week)) %>%
+  full_join(indiv_weekly_pred(week_10, wk10_winners) %>%
+      rename("Week_10" = Week)) %>%
+  full_join(indiv_weekly_pred(week_11, wk11_winners) %>%
+      rename("Week_11" = Week)) %>%
+  full_join(indiv_weekly_pred(week_12, wk12_winners) %>%
+      rename("Week_12" = Week)) %>%
+  full_join(indiv_weekly_pred(week_13, wk13_winners) %>%
+      rename("Week_13" = Week)) %>%
+  full_join(indiv_weekly_pred(week_14, wk14_winners) %>%
+      rename("Week_14" = Week)) %>%
+  full_join(indiv_weekly_pred(week_15, wk15_winners) %>%
+      rename("Week_15" = Week)) %>%
+  full_join(indiv_weekly_pred(data, winners) %>% ####### Add line for previous week and update to current week
+      rename("Week_16" = Week)) %>%
+  mutate(Percent = round(Week_16/n,4)) %>%
+  arrange(-Percent)
+
+#Creating a dataframe with only the weekly picks
+a = season %>% select(-name, -Percent)
+
+#Creating a vector of how many weeks each person picked over the season
+tot_week = NULL
+help = NULL
+for (i in 1:dim(a)[1]){
+  for(j in 1:length(a)){
+    help[j] = ifelse(is.na(a[i,j])==T,0,1)
+    tot_week[i] = sum(help)
+  }
+}
+
+#Creating a vector of how many games each person picked over the season
+tot_picks= NULL
+help = NULL
+for (i in 1:dim(a)[1]){
+  for(j in 1:length(a)){
+    help[j] = wk_max[j]*ifelse(is.na(a[i,j])==T,0,1)
+    tot_picks[i] = sum(help)
+  }
+}
+
+#Creatign a vector of how many games each person picked correct over the season
+tot_correct = NULL
+help = NULL
+for (i in 1:dim(a)[1]){
+  tot_correct[i] = sum(a[i,], na.rm = T)
+}
+
+#adding how many weeks each person picked, season correct percentage, and adjusted season percentag to the data frame and sorting the data
+indiv_disp = season %>% add_column(Weeks_Picked = tot_week) %>%
+  add_column(tot_correct)%>%
+  add_column(tot_picks)%>%
+  mutate(Season_Percent = round(tot_correct/tot_picks,4))%>%
+  mutate(Adj_Season_Percent=round(Season_Percent*(tot_week/length(a)),4)) %>%
+  select(-tot_correct, -tot_picks) %>%
+  arrange(desc(Percent), desc(Season_Percent)) %>%
+  mutate(Percent = ifelse(is.na(Percent)==T, 0, Percent))
+  
+```
+
+```{r individual, echo=FALSE}
+#formating chart for stars 
+improvement_formatter <- 
+  formatter("span", 
+            style = x ~ style(
+              font.weight = "bold", 
+              color = ifelse(x > .5, "green", ifelse(x < .5, "red", "black"))),
+             x ~ icontext(ifelse(x == max(x), "star", ""), x))
+
+# Creating individual results table
+current_indiv = formattable(indiv_disp,
+            align =c("l","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c","c"), 
+            list(
+              `Indicator Name` = formatter("span", 
+                                style = ~ style(color = "grey",font.weight = "bold")),
+              "Percent" = improvement_formatter, 
+              "Season_Percent" = improvement_formatter,
+              "Adj_Season_Percent" = improvement_formatter
+              
+))
+current_indiv
+```
+
+```{r individual Display, echo=FALSE}
+# Printing the individual plot 
+indi = indiv_disp %>% 
+  select(name, starts_with("Week"), Percent) %>%
+  mutate(Week_1 = Week_1/(wk1_n))%>%
+  mutate(Week_2 = Week_2/(wk2_n))%>%
+  mutate(Week_3 = Week_3/(wk3_n))%>%
+  mutate(Week_4 = Week_4/(wk4_n))%>%
+  mutate(Week_5 = Week_5/(wk5_n))%>%
+  mutate(Week_6 = Week_6/(wk6_n))%>%
+  mutate(Week_7 = Week_7/(wk7_n))%>%
+  mutate(Week_8 = Week_8/(wk8_n))%>%
+  mutate(Week_9 = Week_9/(wk9_n))%>%
+  mutate(Week_10 = Week_10/(wk10_n))%>%
+  mutate(Week_11 = Week_11/(wk11_n))%>%
+  mutate(Week_12 = Week_12/(wk12_n))%>%
+  mutate(Week_13 = Week_13/(wk13_n))%>%
+  mutate(Week_14 = Week_14/(wk14_n))%>%
+  mutate(Week_15 = Week_15/(wk15_n))%>%#Update
+  as.data.frame()
+na = rep(indi$name, 16) # Update
+we1 = c(indi$Week_1,indi$Week_2,indi$Week_3,indi$Week_4, indi$Week_5, indi$Week_6, indi$Week_7, indi$Week_8, indi$Week_9,indi$Week_10,indi$Week_11,indi$Week_12,indi$Week_13,indi$Week_14,indi$Week_15, indi$Percent) # Update
+we2 = c(rep("Week 1", length(indi$name)), rep("Week 2", length(indi$name)),
+        rep("Week 3", length(indi$name)), rep("Week 4", length(indi$name)),
+        rep("Week 5", length(indi$name)), rep("Week 6", length(indi$name)),
+        rep("Week 7", length(indi$name)), rep("Week 8", length(indi$name)),
+        rep("Week 9", length(indi$name)), rep("Week_10", length(indi$name)),
+        rep("Week_11", length(indi$name)),rep("Week_12", length(indi$name)),
+        rep("Week_13", length(indi$name)),rep("Week_14", length(indi$name)),
+        rep("Week_15", length(indi$name)),rep("Week_16", length(indi$name))) #Update
+i_df = cbind.data.frame(na, we1, we2)
+
+ggplot(i_df, aes(x = we2, y = we1, group = na, color = na))+
+  geom_point()+
+  geom_line()+
+  geom_text_repel(aes(label=na),hjust=0, vjust=0)+
+  ylim(c(0, 1)) +
+  xlab("NFL Week") + 
+  ylab("Correct Percentage")+
+  ggtitle("Weekly Individual Correct Percentage")+
+  theme_classic()
+```
+
