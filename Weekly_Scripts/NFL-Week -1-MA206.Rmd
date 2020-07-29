@@ -1,0 +1,200 @@
+---
+title: "NFL Week 1 MA206"
+author: "MAJ Daniel Baller"
+date: "8/27/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(data.table)
+library(formattable)
+library(ggpubr)
+data = read_csv("../CSV_Data_Files/NFL Week 1 MA206.csv")
+#data = read_csv("NFL Week 2 MA206.csv")
+```
+
+
+```{r games, include=FALSE}
+#basic info
+season_games = 0
+season_wins  = 0
+
+n = 16 #number of games this week
+# who actually won
+winners = c("Green Bay Packers","Minnesota Vikings","Baltimore Ravens","Buffalo Bills","Kansas City Chiefs","Los Angeles Rams","Tennessee Titans","Philadelphia Eagles","Seattle Seahawks","Los Angeles Chargers","TIE","Dallas Cowboys","San Francisco 49ers","New England Patriots","New Orleans Saints","Oakland Raiders")
+
+CBSsports = c("Green Bay Packers","Atlanta Falcons","Miami Dolphins","New York Jets","Kansas City Chiefs","Carolina Panthers","Cleveland Browns","Philadelphia Eagles","Seattle Seahawks","Indianapolis Colts","Arizona Cardinals","Dallas Cowboys","Tampa Bay Buccaneers","Pittsburgh Steelers","New Orleans Saints","Oakland Raiders")
+
+experts = ifelse(winners == CBSsports, 1, 0)
+CBS = sum(experts)/n
+```
+
+## Group Predictions
+
+```{r Group Predictions, include=FALSE}
+games = data %>% janitor::clean_names() %>%
+  select(starts_with("game"))  #Creating the set of just games
+
+
+# creating a table of predictions and votes for and against the prediction
+pred_table = data.frame(Game=colnames(games), 
+                        t(sapply(games, # apply following function to each column
+                                 function(x) {
+                                   t_x <- sort(table(x), decreasing=TRUE) # get the frequencies and sort them in decreasing order
+                                   list(Prediction=names(t_x)[1], # name of the value with highest frequency
+                                        votes_for=t_x[1], # highest frequency
+                                        votes_against=t_x[2]) # Lowest Freq
+                                 })))
+
+#establish vectors for precictions and votes for and against
+pred = as.character(pred_table$Prediction)
+votes_for = ifelse(is.na(pred_table$votes_for)==T, 0, as.integer(pred_table$votes_for))
+votes_against = ifelse(is.na(pred_table$votes_against)==T, 0, as.integer(pred_table$votes_against))
+
+
+results = tibble(Game = 1:length(games)) %>% 
+  add_column(Prediction = pred) %>%
+  add_column(Winners = winners) %>%
+  mutate(Correct = ifelse(Prediction == Winners, "Yes", "No")) %>%
+  mutate(Correct_Votes = ifelse(Prediction == winners, votes_for, ifelse(winners == "TIE", 0, votes_against))) %>%
+  mutate(Percentage_For = round(Correct_Votes/dim(data)[1],4)) %>%
+  rename("Correct Votes" = Correct_Votes) %>%
+  rename("Correct Percent" = Percentage_For)
+
+
+```
+
+
+```{r displaying group results, echo=FALSE}
+# formating for color of table
+improvement_formatter2 <- 
+  formatter("span", 
+            style = x ~ style(
+              font.weight = "bold", 
+              color = ifelse(x == "Yes", "green", ifelse(x =="No", "red", "black"))))
+
+
+# Creatign Group Prediction table            
+formattable(results, 
+            align =c("c","c","c"), 
+            list(
+              `Indicator Name` = formatter("span", 
+                                style = ~ style(color = "grey",font.weight = "bold")),
+                                "Correct" = improvement_formatter2))
+
+# Printing the weekly and season win percentage            
+correct_count = count(results, Correct)
+weekly_win_percentage = correct_count$n[which(correct_count$Correct == "Yes")]/n
+paste("Correct pick percentage for the week is", weekly_win_percentage, sep = " ")
+paste("CBS Sports win percentage for the week is", CBS, sep = " ")
+season_win_percentage = (correct_count$n[which(correct_count$Correct == "Yes")]+season_wins)/n+season_games
+paste("Season correct pick percentage so far is", season_win_percentage, sep = " ")
+Total = dim(data)[1]
+paste(Total, "predictions this week", sep = " ")
+```
+
+## Individual Predictions
+
+```{r individual, echo=FALSE}
+# Creating the set of names and games
+
+indiv = data %>%
+  select(`Name`,`Hour`, `Game 1`,`Game 2`, `Game 3`, `Game 4`, `Game 5`, `Game 6`, `Game 7`, `Game 8`, `Game 9`, `Game 10`, `Game 11`, `Game 12`, `Game 13`, `Game 14`, `Game 15`, `Game 16`) %>%  janitor::clean_names()
+
+# Counting the correct number of pics for each person  
+
+indiv_correct = NULL
+help = NULL
+for (i in 1:length(indiv$name)){
+  for(j in 1:length(games)){
+    help[j] = ifelse(games[i,j]==winners[j],1,0)
+  indiv_correct[i] = sum(help)
+  }
+}
+
+# Calculating individual win percentage, combining data and orderign by percentage 
+indiv = indiv %>% 
+  add_column(WK1_Correct_Picks = indiv_correct) %>%
+  mutate(WK1_Percentage = WK1_Correct_Picks/n) %>%
+  arrange(-WK1_Percentage)
+
+# choosing just name # correct pics and correct percentage
+indiv_disp = indiv %>%
+  select(name,hour, WK1_Correct_Picks, WK1_Percentage)
+
+
+#formating chart for stars 
+improvement_formatter <- 
+  formatter("span", 
+            style = x ~ style(
+              font.weight = "bold", 
+              color = ifelse(x > .5, "green", ifelse(x < .5, "red", "black"))),
+             x ~ icontext(ifelse(x == max(x), "star", ""), x))
+
+# Creating individual results table
+Week_1_indiv = formattable(indiv_disp,
+            align =c("l","c","c"), 
+            list(
+              `Indicator Name` = formatter("span", 
+                                style = ~ style(color = "grey",font.weight = "bold")),
+              "WK1_Percentage" = improvement_formatter
+              
+))
+
+# Printing the individual table 
+Week_1_indiv
+
+class = indiv_disp %>% 
+    group_by(hour) %>%
+    summarise(Class_Avg = mean(WK1_Percentage))
+
+paste("Class correct percentage for the week is G1:", class[1,2],"G2:", class[2,2],"I1:", class[3,2], sep = " ")
+paste("Best Prediction this week is hour", class$hour[which(class$Class_Avg==max(class$Class_Avg))])
+
+```
+
+
+```{r plots, eval=FALSE, include=FALSE}
+# Plots for each Game 
+
+Plot1 = ggplot(data,aes(`Game 1`)) + geom_bar(aes(fill = `Game 1`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8) + theme(legend.text=element_text(size=10))
+Plot2 = ggplot(data,aes(`Game 2`)) + geom_bar(aes(fill = `Game 2`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot3 = ggplot(data,aes(`Game 3`)) + geom_bar(aes(fill = `Game 3`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot4 = ggplot(data,aes(`Game 4`)) + geom_bar(aes(fill = `Game 4`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot5 = ggplot(data,aes(`Game 5`)) + geom_bar(aes(fill = `Game 5`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot6 = ggplot(data,aes(`Game 6`)) + geom_bar(aes(fill = `Game 6`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot7 = ggplot(data,aes(`Game 7`)) + geom_bar(aes(fill = `Game 7`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot8 = ggplot(data,aes(`Game 8`)) + geom_bar(aes(fill = `Game 8`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot9 = ggplot(data,aes(`Game 9`)) + geom_bar(aes(fill = `Game 9`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot10 = ggplot(data,aes(`Game 10`)) + geom_bar(aes(fill = `Game 10`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot11 = ggplot(data,aes(`Game 11`)) + geom_bar(aes(fill = `Game 11`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot12 = ggplot(data,aes(`Game 12`)) + geom_bar(aes(fill = `Game 12`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot13 = ggplot(data,aes(`Game 13`)) + geom_bar(aes(fill = `Game 13`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot14 = ggplot(data,aes(`Game 14`)) + geom_bar(aes(fill = `Game 14`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot15 = ggplot(data,aes(`Game 15`)) + geom_bar(aes(fill = `Game 15`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+Plot16 = ggplot(data,aes(`Game 16`)) + geom_bar(aes(fill = `Game 16`))+
+  geom_text(aes(label=..count..),stat="count", vjust=1.6, color="black", size=8)+ theme(legend.text=element_text(size=10))
+ggarrange(Plot1, Plot2, Plot3, Plot4, Plot5, Plot6, 
+  #        labels = c("A", "B", "C"),
+          ncol = 3, nrow = 2)
+
+```
